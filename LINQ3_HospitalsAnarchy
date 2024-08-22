@@ -1,0 +1,156 @@
+namespace LINQ1_Criminals;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Hospital hospital = new Hospital();
+
+        hospital.Work();
+    }
+}
+
+public class Patient
+{
+    public Patient(string name, int age, string disease)
+    {
+        Name = name;
+        Age = age;
+        Disease = disease;
+    }
+
+    public string Name { get; }
+    public int Age { get; }
+    public string Disease { get; }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"{Name} : возраст {Age}/ заболевание {Disease}");
+    }
+}
+
+public class PatientsRegistry
+{
+    private List<Patient> _patients;
+
+    public PatientsRegistry()
+    {
+        _patients = new List<Patient>()
+        {
+            new Patient("Иванов", 35, "ОРВИ"),
+            new Patient("Петрова", 57, "инсульт"),
+            new Patient("Сидоров", 29, "отравление"),
+            new Patient("Птицина", 49, "инфаркт"),
+            new Patient("Синицина", 34, "энцефалит"),
+            new Patient("Хуызитенко", 45, "ОРВИ"),
+            new Patient("Байден", 81, "деменция"),
+            new Patient("Головач", 67, "пневмония"),
+            new Patient("Джонсон", 19, "ОРВИ"),
+            new Patient("Жировецкий", 72, "инфаркт"),
+        };
+    }
+
+    public List<Patient> Patients => _patients.ToList();
+}
+
+public class Hospital
+{
+    private bool _isWork = true;
+    private PatientsRegistry _patientsRegistry = new PatientsRegistry();
+
+    public void Work()
+    {
+        while (_isWork)
+        {
+            Console.Clear();
+
+            ManageMenu();
+        }
+    }
+
+    private void ManageMenu()
+    {
+        const ConsoleKey OrderByNameCommand = ConsoleKey.N;
+        const ConsoleKey OrderByAgeCommand = ConsoleKey.A;
+        const ConsoleKey OrderByDiseaseCommand = ConsoleKey.D;
+        const ConsoleKey ExitCommand = ConsoleKey.E;
+
+        Console.WriteLine(
+            $"выход - {ExitCommand}\nсортировать пациентов по имени - {OrderByNameCommand}\n" +
+            $"сортировать пациентов по болезни - {OrderByDiseaseCommand}\n" +
+            $"сортировать пациентов по возрасту - {OrderByAgeCommand}");
+
+        switch (Console.ReadKey(true).Key)
+        {
+            case ExitCommand:
+                _isWork = false;
+                break;
+            case OrderByNameCommand:
+                OrderByName();
+                break;
+
+            case OrderByDiseaseCommand:
+                OrderByDisease();
+                break;
+
+            case OrderByAgeCommand:
+                OrderByAge();
+                break;
+        }
+    }
+
+    private void OrderByName()
+    {
+        List<Patient> filteredPatients = _patientsRegistry.Patients
+            .OrderBy(patient => patient.Name)
+            .ToList();
+
+        ShowPatients(filteredPatients);
+
+        Console.ReadLine();
+    }
+
+    private void OrderByAge()
+    {
+        List<Patient> filteredPatients = _patientsRegistry.Patients
+            .OrderBy(patient => patient.Age)
+            .ToList();
+
+        ShowPatients(filteredPatients);
+
+        Console.ReadLine();
+    }
+
+    private void OrderByDisease()
+    {
+        string disease = UserUtils.GetUserInput("Введите заболевание пациента:").ToLower();
+
+        List<Patient> filteredPatients = _patientsRegistry.Patients
+            .Where(patient => patient.Disease.ToLower() == disease)
+            .ToList();
+
+        ShowPatients(filteredPatients);
+
+        Console.ReadLine();
+    }
+
+    private void ShowPatients(List<Patient> patients)
+    {
+        foreach (Patient patient in patients)
+        {
+            patient.ShowInfo();
+        }
+
+        Console.ReadLine();
+    }
+}
+
+public static class UserUtils
+{
+    public static string GetUserInput(string text)
+    {
+        Console.WriteLine(text);
+
+        return Console.ReadLine() ?? string.Empty;
+    }
+}
