@@ -1,0 +1,106 @@
+namespace LINQ2_Amnesty;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        AmnestyTribunal tribunal = new AmnestyTribunal("антиправительственное");
+        
+        tribunal.Work();
+    }
+}
+
+public class Prisoner
+{
+    public Prisoner(string name, string crime)
+    {
+        Name = name;
+        Crime = crime;
+    }
+
+    public string Name { get; }
+    public string Crime { get; }
+
+    public void ShowCriminal()
+    {
+        Console.WriteLine($"{Name} : преступление {Crime} ");
+    }
+}
+
+public class Prison
+{
+    private List<Prisoner> _prisoners;
+
+    public Prison()
+    {
+        _prisoners = new List<Prisoner>()
+        {
+            new Prisoner("Сергей", "антиправительственное"),
+            new Prisoner("Даниил", "хранение наркотиков"),
+            new Prisoner("Малхаз",  "антиправительственное"),
+            new Prisoner("Иван",  "кража"),
+            new Prisoner("Олег",  "антиправительственное"),
+            new Prisoner("Бачана" ,   "ограбление"),
+            new Prisoner("Владлен",  "убийство"),
+            new Prisoner("Мыкола",  "хранение наркотиков"),
+        };
+    }
+
+    public List<Prisoner> GetCriminals => _prisoners.ToList();
+
+    public void ReleasePrisoners(List<Prisoner> amnestedPrisoners)
+    {
+        _prisoners = _prisoners.Except(amnestedPrisoners).ToList();
+    }
+}
+
+public class AmnestyTribunal
+{
+    private Prison _prison = new Prison();
+    private string _amnestyCrime;
+    
+    public AmnestyTribunal(string amnestyCrime)
+    {
+        _amnestyCrime = amnestyCrime;
+    }
+    
+    public void Work()
+    {
+        ShowCriminals(_prison.GetCriminals);
+
+        Console.ReadLine();
+        
+        List<Prisoner> amnestingPrisoners = GetAmnestyCriminals();
+        
+        _prison.ReleasePrisoners(amnestingPrisoners);
+        
+        Console.Clear();
+        
+        ShowCriminals(_prison.GetCriminals);
+    }
+
+    private List<Prisoner> GetAmnestyCriminals()
+    {
+        Console.WriteLine($"Амнистировать заключенных с преступлением - {_amnestyCrime}");
+        
+        List<Prisoner> filtredPrisoners = _prison.GetCriminals
+            .Where(prisoner => prisoner.Crime == _amnestyCrime)
+            .ToList();
+
+        Console.WriteLine("Амнистируемые заключенные: ");
+        
+        ShowCriminals(filtredPrisoners);
+
+        return filtredPrisoners;
+    }
+
+    private void ShowCriminals(List<Prisoner> criminals)
+    {
+        foreach (Prisoner criminal in criminals)
+        {
+            criminal.ShowCriminal();
+        }
+
+        Console.ReadLine();
+    }
+}
