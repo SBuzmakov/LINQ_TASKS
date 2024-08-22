@@ -1,0 +1,150 @@
+namespace LINQ1_Criminals;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        DetectiveAgency detectiveAgency = new DetectiveAgency();
+
+        detectiveAgency.Work();
+    }
+}
+
+public class Criminal
+{
+    public Criminal(string name, int height, int weight, string nationality, bool isArrested)
+    {
+        Name = name;
+        Height = height;
+        Weight = weight;
+        Nationality = nationality;
+        IsArrested = isArrested;
+    }
+
+    public string Name { get; }
+    public int Height { get; }
+    public int Weight { get; }
+    public string Nationality { get; }
+    public bool IsArrested { get; }
+    private string ShowArrestStatus => IsArrested ? "Под арестом." : "На свободе.";
+
+    public void ShowCriminal()
+    {
+        Console.WriteLine($"{Name} : рост {Height}/ вес {Weight}/ национальность {Nationality}/ {ShowArrestStatus} ");
+    }
+}
+
+public class CriminalsRegistry
+{
+    private List<Criminal> _criminals;
+
+    public CriminalsRegistry()
+    {
+        _criminals = new List<Criminal>()
+        {
+            new Criminal("Сергей", 165, 70, "русский", false),
+            new Criminal("Даниил", 189, 71, "украинец", true),
+            new Criminal("Малхаз", 175, 75, "грузин", false),
+            new Criminal("Иван", 192, 102, "беларус", false),
+            new Criminal("Олег", 179, 80, "русский", true),
+            new Criminal("Бачана", 177, 85, "грузин", true),
+            new Criminal("Владлен", 171, 66, "беларус", true),
+            new Criminal("Мыкола", 164, 60, "украинец", false),
+        };
+    }
+
+    public List<Criminal> GetCriminals => _criminals.ToList();
+}
+
+public class DetectiveAgency
+{
+    private bool _isWork = true;
+    private CriminalsRegistry _criminalsRegistry = new CriminalsRegistry();
+
+    public void Work()
+    {
+        while (_isWork)
+        {
+            Console.Clear();
+
+            ManageMenu();
+        }
+    }
+
+    private void ManageMenu()
+    {
+        const ConsoleKey ShowAllCriminalsCommand = ConsoleKey.A;
+        const ConsoleKey SearchCriminalsCommand = ConsoleKey.S;
+        const ConsoleKey ExitCommand = ConsoleKey.E;
+
+        Console.WriteLine(
+            $"выход - {ExitCommand}\nпоказать список всех преступников - {ShowAllCriminalsCommand}\nпоиск преступников - {SearchCriminalsCommand}");
+
+        switch (Console.ReadKey(true).Key)
+        {
+            case ExitCommand:
+                _isWork = false;
+                break;
+            case ShowAllCriminalsCommand:
+                ShowCriminals(_criminalsRegistry.GetCriminals);
+                break;
+
+            case SearchCriminalsCommand:
+                SearchCriminals();
+                break;
+        }
+    }
+
+    private void SearchCriminals()
+    {
+        int height = UserUtils.GetUserInputInt("Введите минимальный рост преступника:");
+        int weight = UserUtils.GetUserInputInt("Введите минимальный вес преступника:");
+        string nationality = UserUtils.GetUserInput("Введите национальность преступника:").ToLower();
+
+        List<Criminal> filtredCriminals = _criminalsRegistry.GetCriminals
+            .Where(criminal => criminal.IsArrested == false &&
+                               criminal.Height >= height &&
+                               criminal.Weight >= weight &&
+                               criminal.Nationality == nationality)
+            .ToList();
+
+        ShowCriminals(filtredCriminals);
+
+        Console.ReadLine();
+    }
+
+    private void ShowCriminals(List<Criminal> criminals)
+    {
+        foreach (Criminal criminal in criminals)
+        {
+            criminal.ShowCriminal();
+        }
+
+        Console.ReadLine();
+    }
+}
+
+public static class UserUtils
+{
+    public static string GetUserInput(string text)
+    {
+        Console.WriteLine(text);
+
+        return Console.ReadLine() ?? string.Empty;
+    }
+
+    public static int GetUserInputInt(string text)
+    {
+        int parsedNumber = 0;
+
+        Console.WriteLine(text);
+
+        while (int.TryParse(Console.ReadLine(), out parsedNumber) == false)
+        {
+            Console.WriteLine("Ошибка! Введите число");
+            Console.ReadKey(true);
+        }
+
+        return parsedNumber;
+    }
+}
