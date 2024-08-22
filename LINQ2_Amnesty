@@ -46,7 +46,7 @@ public class Prison
         };
     }
 
-    public List<Prisoner> GetCriminals => _prisoners.ToList();
+    public List<Prisoner> GetPrisoners => _prisoners.ToList();
 
     public void ReleasePrisoners(List<Prisoner> amnestedPrisoners)
     {
@@ -66,7 +66,7 @@ public class AmnestyTribunal
     
     public void Work()
     {
-        ShowCriminals(_prison.GetCriminals);
+        Show(_prison.GetPrisoners);
 
         Console.ReadLine();
         
@@ -76,25 +76,25 @@ public class AmnestyTribunal
         
         Console.Clear();
         
-        ShowCriminals(_prison.GetCriminals);
+        Show(_prison.GetPrisoners);
     }
 
     private List<Prisoner> GetAmnestyCriminals()
     {
         Console.WriteLine($"Амнистировать заключенных с преступлением - {_amnestyCrime}");
         
-        List<Prisoner> filtredPrisoners = _prison.GetCriminals
+        List<Prisoner> filtredPrisoners = _prison.GetPrisoners
             .Where(prisoner => prisoner.Crime == _amnestyCrime)
             .ToList();
 
         Console.WriteLine("Амнистируемые заключенные: ");
         
-        ShowCriminals(filtredPrisoners);
+        Show(filtredPrisoners);
 
         return filtredPrisoners;
     }
 
-    private void ShowCriminals(List<Prisoner> criminals)
+    private void Show(List<Prisoner> criminals)
     {
         foreach (Prisoner criminal in criminals)
         {
