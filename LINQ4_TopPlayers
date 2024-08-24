@@ -1,0 +1,106 @@
+namespace LINQ4_TopPlayers;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        Rating rating = new Rating();
+
+        rating.Work();
+    }
+}
+
+public class Player
+{
+    public Player(string name, int level, int strength)
+    {
+        Name = name;
+        Level = level;
+        Strength = strength;
+    }
+
+    public int Level { get; }
+    public int Strength { get; }
+    private string Name { get; }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"{Name} : уровень {Level}/ сила {Strength}");
+    }
+}
+
+public class PlayersRegistry
+{
+    private List<Player> _players;
+
+    public PlayersRegistry()
+    {
+        _players = new List<Player>()
+        {
+            new Player("Иванов", 35, 100),
+            new Player("Петрова", 57, 250),
+            new Player("Сидоров", 29, 150),
+            new Player("Птицина", 49, 350),
+            new Player("Синицина", 34, 200),
+            new Player("Хуызитенко", 45, 400),
+            new Player("Байден", 81, 250),
+            new Player("Головач", 67, 50),
+            new Player("Джонсон", 19, 5),
+            new Player("Жировецкий", 72, 75),
+        };
+    }
+
+    public List<Player> Players => _players.ToList();
+}
+
+public class Rating
+{
+    private const int TopPlayersAmount = 3;
+    
+    private PlayersRegistry _playersRegistry = new PlayersRegistry();
+
+    public void Work()
+    {
+        Console.WriteLine("все игроки:");
+        
+        ShowPlayers(_playersRegistry.Players);
+
+        Console.ReadLine();
+
+        Console.WriteLine("Топ 3 по уровню:");
+        
+        ShowPlayers(GetTopPlayersByLevel(TopPlayersAmount));
+
+        Console.WriteLine("Топ 3 по силе:");
+        
+        ShowPlayers(GetTopPlayersByStrength(TopPlayersAmount));
+    }
+
+    private List<Player> GetTopPlayersByLevel(int topAmount)
+    {
+        List<Player> filteredPlayers = _playersRegistry.Players
+            .OrderByDescending(player => player.Level).Take(topAmount)
+            .ToList();
+
+        return filteredPlayers;
+    }
+
+    private List<Player> GetTopPlayersByStrength(int topAmount)
+    {
+        List<Player> filteredPlayers = _playersRegistry.Players
+            .OrderByDescending(player => player.Strength).Take(topAmount)
+            .ToList();
+
+        return filteredPlayers;
+    }
+
+    private void ShowPlayers(List<Player> players)
+    {
+        foreach (Player player in players)
+        {
+            player.ShowInfo();
+        }
+
+        Console.ReadLine();
+    }
+}
