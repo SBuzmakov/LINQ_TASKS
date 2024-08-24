@@ -1,0 +1,88 @@
+namespace LINQ4_TopPlayers;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        ProductsAccaunting productsAccaunting = new ProductsAccaunting();
+
+        productsAccaunting.Work();
+    }
+}
+
+public class Stew
+{
+    public Stew(string name, int productionDate, int expirationTime)
+    {
+        Name = name;
+        ProductionDate = productionDate;
+        ExpirationTime = expirationTime;
+    }
+
+    public bool IsExpired => ProductionDate + ExpirationTime < DateTime.Now.Year;
+    private int ProductionDate { get; }
+    private int ExpirationTime { get; }
+    private string Name { get; }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"{Name} : год производства {ProductionDate}. срок годности {ExpirationTime} года/лет");
+    }
+}
+
+public class StewsRegistry
+{
+    private List<Stew> _stews;
+
+    public StewsRegistry()
+    {
+        _stews = new List<Stew>()
+        {
+            new Stew("конина", 1925, 15),
+            new Stew("свинина", 2020, 3),
+            new Stew("свинина", 2015, 3),
+            new Stew("говядина", 1999, 5),
+            new Stew("индейка", 2024, 4),
+            new Stew("курица", 2021, 2),
+            new Stew("говядина", 2022, 5),
+            new Stew("свинина", 2010, 3),
+            new Stew("говядина", 2023, 5),
+            new Stew("индейка", 2007, 4),
+        };
+    }
+
+    public List<Stew> Stews => _stews.ToList();
+}
+
+public class ProductsAccaunting
+{
+    private StewsRegistry _stewsRegistry = new StewsRegistry();
+
+    public void Work()
+    {
+        Console.WriteLine("Список тушенки:");
+        
+        ShowStews(_stewsRegistry.Stews);
+
+        Console.WriteLine("Просроченная тушенка:");
+        
+        ShowStews(GetExpiredStews());
+    }
+
+    private List<Stew> GetExpiredStews()
+    {
+        List<Stew> filteredStews = _stewsRegistry.Stews.Where(stew => stew.IsExpired).ToList();
+
+        return filteredStews;
+    }
+
+    private void ShowStews(List<Stew> stews)
+    {
+        foreach (Stew stew in stews)
+        {
+            stew.ShowInfo();
+        }
+
+        Console.ReadLine();
+    }
+}
