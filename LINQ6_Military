@@ -1,0 +1,68 @@
+using System.ComponentModel;
+using System.Security.Cryptography;
+
+namespace LINQ4_Military;
+
+public class Program
+{
+    static void Main(string[] args)
+    {
+        SoldiersAccaunting soldiersAccaunting = new SoldiersAccaunting();
+
+        soldiersAccaunting.ShowSoldiersRanks();
+    }
+}
+
+public class Soldier
+{
+    public Soldier(string name, int militaryServiceTime, string troopsType, string militaryRank)
+    {
+        Name = name;
+        MilitaryServiceTime = militaryServiceTime;
+        TroopsType = troopsType;
+        MilitaryRank = militaryRank;
+    }
+
+    public string Name { get; }
+    public string MilitaryRank { get; }
+    private string TroopsType { get; }
+    private int MilitaryServiceTime { get; }
+}
+
+public class SoldiersRegistry
+{
+    private List<Soldier> _soldiers;
+
+    public SoldiersRegistry()
+    {
+        _soldiers = new List<Soldier>()
+        {
+            new Soldier("Владимир", 1, "артиллерия", "капрал"),
+            new Soldier("Сергей", 3, "танковые", "майор"),
+            new Soldier("Никита", 2, "разведывательные", "капитан"),
+            new Soldier("Олег", 1, "вкс", "лейтенант"),
+            new Soldier("Дмитрий", 4, "штурмовые", "сержант"),
+            new Soldier("Александр", 2, "медицинские", "ефрейтор"),
+        };
+    }
+
+    public List<Soldier> Soldiers => _soldiers.ToList();
+}
+
+public class SoldiersAccaunting
+{
+    private SoldiersRegistry _soldiersRegistry = new SoldiersRegistry();
+    
+    public void ShowSoldiersRanks()
+    {
+        var orderedSoldiers = _soldiersRegistry.Soldiers.Select(soldier => new {Name = soldier.Name, Rank = soldier.MilitaryRank}).ToList();
+        
+        foreach (var soldier in orderedSoldiers)
+        {
+            Console.WriteLine($"{soldier.Name}: {soldier.Rank}");
+        }
+
+        Console.ReadLine();
+    }
+}
+
